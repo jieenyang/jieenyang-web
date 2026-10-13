@@ -26,6 +26,10 @@
       "minzoom": 0,
       "maxzoom": 11,
       "encoding": "terrarium"
+    },
+    "klamath_boundary": {
+      "type": "geojson",
+      "data": "https://jieenyang.github.io/jieenyang-web/geos472-lab-1/klamath_boundary.geojson"
     }
   },
   "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
@@ -705,7 +709,18 @@
             "#1f78b4",
             "#999999"
           ]
-        ]
+        ],
+        "fill-opacity": {"stops": [[9, 1], [13, 0.5]]}
+      }
+    },
+    {
+      "id": "klamath_boundary_line",
+      "type": "line",
+      "source": "klamath_boundary",
+      "paint": {
+        "line-color": "rgba(15, 131, 15, 1)",
+        "line-width": 1,
+        "line-opacity": {"stops": [[7, 0.8], [10, 0]]}
       }
     }
   ],
