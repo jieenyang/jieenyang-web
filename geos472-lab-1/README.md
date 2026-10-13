@@ -2,4 +2,6 @@ This is for lab 1, where I map out prescribed fire treatments in the Klamath Nat
 
 The geojson file is published at: https://jieenyang.github.io/jieenyang-web/geos472-lab-1/klamath_rx_treatments.geojson
 
+The style file is at https://jieenyang.github.io/jieenyang-web/geos472-lab-1/klamath_rx_treatment_style.json
+
 The map is at: https://jieenyang.github.io/jieenyang-web/geos472-lab-1/
