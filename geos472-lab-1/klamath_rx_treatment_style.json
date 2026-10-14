@@ -53,7 +53,7 @@
           ["exponential", 1.5],
           ["zoom"],
           0,
-          0.6,
+          0.5,
           6,
           0.1
         ]
@@ -183,7 +183,14 @@
       "source-layer": "water",
       "filter": ["!=", ["get", "brunnel"], "tunnel"],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgb(158,189,255)"}
+      "paint": {"fill-color": "rgba(192, 212, 244, 1)"}
+    },
+    {
+      "id": "dem",
+      "type": "hillshade",
+      "source": "terrain_dem",
+      "minzoom": 6,
+      "paint": {"hillshade-exaggeration": 0.1}
     },
     {
       "id": "road_minor_casing",
@@ -710,7 +717,7 @@
             "#999999"
           ]
         ],
-        "fill-opacity": {"stops": [[9, 1], [13, 0.5]]}
+        "fill-opacity": {"stops": [[9, 1], [13, 0.45]]}
       }
     },
     {
