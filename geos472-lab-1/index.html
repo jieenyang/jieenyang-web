@@ -5,35 +5,30 @@
   <title>Klamath National Forest prescribed fire treatments</title>
   <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
+    body { margin: 0; }
     #map { position: absolute; inset: 0; }
-    #panel {
-      position: absolute; top: 10px; left: 10px; z-index: 1;
-      background: rgba(255,255,255,0.92); padding: 10px 14px;
-      border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-      max-width: 260px; font-size: 13px; line-height: 1.4;
-    }
-    #panel h1 { font-size: 16px; margin: 0 0 4px; }
-    #panel .row { display: flex; align-items: center; margin: 3px 0; }
-    #panel .swatch { width: 16px; height: 16px; margin-right: 8px; border: 1px solid rgba(0,0,0,0.3); }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <div id="panel">
-    <h1>Fuel Reduction Projects in the Klamath National Forest, CA</h1>
-    <div class="row">Fuel Treatment Type:</div>
-    <div class="row"><span class="swatch" style="background:#d7301f"></span>Broadcast Burn</div>
-    <div class="row"><span class="swatch" style="background:#6a3d9a"></span>Jackpot Burn</div>
-    <div class="row"><span class="swatch" style="background:#1f78b4"></span>Machine Pile Burn</div>
-  </div>
   <script>
     const map = new maplibregl.Map({
       container: 'map',
       style: 'klamath_rx_treatment_style.json',
       center: [-122.5, 41.5],
       zoom: 8
+    function drawLegend() {
+      const x = 10, y, 10
+      noStroke();
+      fill(255, 255, 255, 200);
+      rect(x, y, x + 260, y + 100, 5);
+      fill(30);
+      textSize(12);
+      text("Fuel Reduction Projects in the Klamath National Forest, CA", x + 3, y + 3);
+      
+    }
     });
     map.addControl(new maplibregl.NavigationControl());
   </script>
