@@ -40,15 +40,15 @@
 
     // title font
     fill(20);
-    textSize(13);
+    textSize(15);
     textStyle(BOLD);
     text("Fuel Reduction Projects in the Klamath National Forest, CA", x + 10, y + 8, legendWidth - 20, 40);
     textStyle(NORMAL);
 
     // text font
-    textSize(11);
+    textSize(12);
     fill(70);
-    text("Fuel treatment burn type:", x + 10, y + 50);
+    text("Fuel treatment burn type:", x + 10, y + 55);
 
     // treatment type arrays
     const treatment_rows = [
@@ -63,8 +63,8 @@
       fill(r, g, b);
       rect(x + 10, row_y_position, 14, 14, 2);
       fill(20);
-      textSize(11);
-      text(label, x + 30, row_y_position + 10);
+      textSize(12);
+      text(label, x + 30, row_y_position + 12);
       row_y_position = row_y_position + 20;
     }
       
