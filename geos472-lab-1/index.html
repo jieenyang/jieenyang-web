@@ -15,36 +15,72 @@
 <body>
   <div id="map"></div>
   <script>
+    
     const map = new maplibregl.Map({
       container: 'map',
       style: 'klamath_rx_treatment_style.json',
       center: [-122.5, 41.5],
       zoom: 8
     });
+    
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('map');
       noLoop();
     }
+    
     function drawLegend() {
-      const x = 10, y = 10
+      
+    // legend
+    const x = 10, y = 10;
+    const legendWidth = 230, legendHeight = 130;
+    noStroke();
+    fill(255, 255, 255, 220);
+    rect(x, y, legendWidth, legendHeight, 5);
+
+    // title font
+    fill(20);
+    textSize(13);
+    textStyle(BOLD);
+    text("Fuel Reduction Projects in the Klamath National Forest, CA", x + 10, y + 8, legendWidth - 20, 40);
+    textStyle(NORMAL);
+
+    // text font
+    textSize(11);
+    fill(70);
+    text("Fuel treatment burn type:", x + 10, y + 46);
+
+    // treatment type arrays
+    const treatment_rows = [
+      ["Broadcast Burn", 215, 48, 31],
+      ["Jackpot Burn", 106, 61, 154],
+      ["Machine Pile Burn", 31, 120, 180]
+    ];
+  
+    let row_y_position = y + 65;
+    for (const [label, r, g, b] of treatment_rows) {
       noStroke();
-      fill(255, 255, 255, 200);
-      rect(x, y, 250, 100, 5);
-      fill(30);
-      textSize(12);
-      text("Fuel Reduction Projects in the Klamath National Forest, CA", x + 3, y + 3);
+      fill(r, g, b);
+      rect(x + 10, row_y_position, 14, 14, 2);
+      fill(20);
+      textSize(11);
+      text(label, x + 30, row_y_position + 2);
+      row_y_position = row_y_position + 20;
+    }
       
     }
     function draw() {
       clear();
       drawLegend();
     }
+    
     function windowResized() {
       resizeCanvas(windowWidth, windowHeight);
       redraw();
     }
+    
     map.addControl(new maplibregl.NavigationControl());
+    
   </script>
 </body>
 </html>
