@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Using data, step 5: change the basemap style</title>
+  <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+  <style>
+    body { margin: 0; }
+    #map { position: absolute; inset: 0; }
+    #map canvas.p5Canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+const myMap = new maplibregl.Map({
+  container: 'map',
+  center: [-123.25, 49.26],
+  zoom: 2.5,
+  style: 'https://tiles.openfreemap.org/styles/bright' // changing the base map to bright
+});
+myMap.addControl(new maplibregl.NavigationControl());
+
+function latLngToPixel(lat, lng) { return myMap.project([lng, lat]); }
+function pixelToLatLng(x, y)     { const ll = myMap.unproject([x, y]); return { lat: ll.lat, lng: ll.lng }; }
+
+let meteorites;
+
+function preload() {
+  meteorites = loadTable('Meteorite_Landings.csv', 'csv', 'header');
+}
+
+function setup() {
+  const canvas = createCanvas(windowWidth, windowHeight);
+  canvas.parent('map');
+  myMap.on('move', () => redraw());
+  noLoop();
+}
+
+function symbolSize(massInGrams) {
+  return 5 + 35 * sqrt(massInGrams / 60000000); // the smallest circle now starts at 5 px
+}
+
+function classColor(recclass) { // matches the first letter with a unique colour
+  const letter = recclass.charAt(0).toUpperCase();
+  if (letter === 'I')
+	return color(247,104,161,150);
+  if (letter === 'L')
+	return color(189,215,231,150);
+  if (letter === 'H')
+	return color(33,113,181,150);
+  if (letter === 'P')
+	return color(254,153,41,150);
+  else  
+	return color(160,160,160,150);
+}
+
+function draw() {
+  clear();
+  const bounds = myMap.getBounds();
+  for (let i = 0; i < meteorites.getRowCount(); i++) {
+    const lat = meteorites.getNum(i, 'reclat');
+    const lng = meteorites.getNum(i, 'reclong');
+    if (!bounds.contains([lng, lat])) continue;
+    const mass = meteorites.getNum(i, 'mass (g)');
+    if (mass < 50000) continue; // additional filter for large meteorites only
+    const pos = latLngToPixel(lat, lng);
+    const size = symbolSize(mass);
+    const recclass = meteorites.getString(i, 'recclass');
+    fill(classColor(recclass));
+    stroke(30);
+    ellipse(pos.x, pos.y, size, size);
+  }
+  drawLegend();
+}
+
+function drawLegend() {
+  const x = 20, y = height - 150;
+  noStroke();
+  fill(255, 255, 255, 210);
+  rect(x - 10, y - 30, 370, 170, 6);
+  fill(30);
+  textSize(13);
+  text("Large meteorites (mass > 50,000 g) classified by material:", x, y - 10);
+
+  // Iron
+  stroke(30);
+  fill(247, 104, 161, 150);
+  ellipse(x + 8, y + 24, 14, 14);
+  noStroke();
+  fill(30);
+  text('Iron (I)', x + 24, y + 28);
+
+  // Low-iron chondrite
+  stroke(30);
+  fill(189, 215, 231, 150);
+  ellipse(x + 8, y + 48, 14, 14);
+  noStroke();
+  fill(30);
+  text('Low-iron chondrite (L)', x + 24, y + 52);
+
+  // High-iron chondrite
+  stroke(30);
+  fill(33, 113, 181, 150);
+  ellipse(x + 8, y + 72, 14, 14);
+  noStroke();
+  fill(30);
+  text('High-iron chondrite (H)', x + 24, y + 76);
+
+  // Pallasite
+  stroke(30);
+  fill(254, 153, 41, 150);
+  ellipse(x + 8, y + 96, 14, 14);
+  noStroke();
+  fill(30);
+  text('Pallasite (P)', x + 24, y + 100);
+
+  // Other
+  stroke(30);
+  fill(160, 160, 160, 150);
+  ellipse(x + 8, y + 120, 14, 14);
+  noStroke();
+  fill(30);
+  text('Other', x + 24, y + 124);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  redraw();
+}
+</script>
+</body>
+</html>
