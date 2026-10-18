@@ -20,6 +20,7 @@
       style: 'klamath_rx_treatment_style.json',
       center: [-122.5, 41.5],
       zoom: 8
+    });
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('map');
@@ -42,7 +43,6 @@
       resizeCanvas(windowWidth, windowHeight);
       redraw();
     }
-    });
     map.addControl(new maplibregl.NavigationControl());
   </script>
 </body>
