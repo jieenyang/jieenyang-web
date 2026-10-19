@@ -15,10 +15,12 @@ To meet these goals, I chose OpenFreeMap’s Liberty style as the base map becau
 The most important data layer is the fuel treatment polygons, which are coloured by the Treatment_Type property in the linked GeoJSON file using a categorical colour scheme. These treatment polygons are fully opaque up to zoom level 9. From that point, they gradually become more transparent as the user zooms in further, until opacity reaches 4.5 at zoom level 13. This allows the road network, land cover, and terrain underneath to show through the polygons when looking at specific projects (see Screenshot 1). The design also addresses question (2) regarding whether treatments are indeed implemented along urban boundaries and roadways, as identified in the literature review.
 
 ![Screenshot 1: Fuel Treatment near Happy Camp, Klamath National Forest](Screenshot_1.png)
+Screenshot 1: Fuel Treatment near Happy Camp, Klamath National Forest
 
 In addition, I added the Klamath National Forest boundary as a green outline to provide locational context for the study area. The forest boundary is opaque when zoomed out, and gradually fades as the user zooms in, disappearing entirely by zoom level 10. This is because the boundary will only become useful when the user zooms out to a scale too small to see the treatment polygons themselves, helping them remember where the study area is (see Screenshot 2).
 
 ![Screenshot 2: Overview of the Study Area](Screenshot_2.png)
+Screenshot 2: Overview of the Study Area
 
 The placement fuel reduction projects inevitably follow, or are constrained by, topography. Therefore, I added a terrain shading tiles layer developed by the open-source mapping company Mapzen and hosted on Amazon Web Service’s Registry of Open Data. This data is accessed from: https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png, which has been cited in a tutorial on GitHub and described as requiring no keys (https://github.com/maplibre/maplibre-agent-skills/issues/19). Its tile size is set to 256 pixels to match OpenFreeMap’s default for consistency.
 
