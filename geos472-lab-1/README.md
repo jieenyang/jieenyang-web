@@ -30,4 +30,4 @@ Because access routes are part of the decision logic for fuel treatment placemen
 
 ## Peer Critique:
 
-In general, my peers found the map easy to understand, but I did receive suggestions that (1) the colour of water is too bright, and (2) the name labels of cities or towns are too crowded and may take away from the map’s focus. Therefore, I lightened the water colour accordingly and adjusted the zoom settings for place name labels. In this lab, generative AI was used specifically to suggest a free terrain shading tile data source, which was the Mapzen terrain data hosted on AWS.
+In general, my peers found the map easy to understand, but I did receive suggestions that (1) the colour of water is too bright, and (2) the name labels of cities or towns are too crowded and may take away from the map’s focus. Therefore, I lightened the water colour accordingly and adjusted the zoom settings for place name labels. In this lab, generative AI was used specifically to search for a free terrain shading tile data source, which was suggested to be the Mapzen terrain data hosted on AWS.
