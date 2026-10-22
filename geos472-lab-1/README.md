@@ -17,7 +17,7 @@ The most important data layer is the fuel treatment polygons, which are coloured
 ![Screenshot 1: Fuel Treatment near Happy Camp, Klamath National Forest](Screenshot_1.png)
 Screenshot 1: Fuel Treatment near Happy Camp, Klamath National Forest
 
-In addition, I added the Klamath National Forest boundary as a green outline to provide locational context for the study area. The forest boundary is opaque when zoomed out, and gradually fades as the user zooms in. This is because the boundary will only become useful when the user zooms out to a scale too small to see the treatment polygons themselves, helping them remember where the study area is after they navigate away (see Screenshot 2).
+In addition, I added the Klamath National Forest boundary as a green outline to provide locational context for the study area. The forest boundary is opaque when zoomed out, and gradually fades as the user zooms in. This is because the boundary will only become useful when the users zoom out to a scale too small to see the treatment polygons themselves, helping them remember where the study area is even if they navigate away from it (see Screenshot 2).
 
 ![Screenshot 2: Overview of the Study Area](Screenshot_2.png)
 Screenshot 2: Overview of the Study Area
