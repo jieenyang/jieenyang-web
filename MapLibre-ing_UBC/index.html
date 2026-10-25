@@ -76,7 +76,7 @@
         if (entrance.ENTRANCE_TYPE) {
           const popup = new maplibregl.Popup();
           popup.setLngLat(e.lngLat);
-          popup.setText(entrance.ENTRANCE_TYPE + ' entrance, ' + entrance.NUM_DOORS + ' doors');
+          popup.setText(entrance.ENTRANCE_TYPE + ' entrance, ' + entrance.NUM_DOORS + ' door(s)');
           popup.addTo(map);
         }
       }
