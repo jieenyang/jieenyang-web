@@ -2,6 +2,7 @@
 <html>
 
   <head>
+    
     <meta charset="utf-8" />
     <title>Add a little info via interactivity…</title>
 
@@ -10,11 +11,18 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.15.0/dist/maplibre-gl.css"
     />
+
+    // Allow the map size adjust based on browser window.
+    <style>
+      body { margin: 0; }
+      #mapid { position: absolute; inset: 0; }
+    </style>
+    
   </head>
   
   <body>
     <!-- The web map will go in this div element. -->
-    <div id="mapid" style="width: 600px; height: 400px;"></div>
+    <div id="mapid"></div>
 
     <script type="module">
       // Load MapLibre's code (JavaScript). Version 6 is loaded as a module, with import.
@@ -114,4 +122,3 @@
     </script>
   </body>
 </html>
-
