@@ -1,1 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Add a little info via interactivity…</title>
+
+    <!-- Load MapLibre's stylesheet (CSS). Its code (JavaScript) is loaded below, in the script. -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.15.0/dist/maplibre-gl.css"
+    />
+  </head>
+  
+  <body>
+    <!-- The web map will go in this div element. -->
+    <div id="mapid" style="width: 600px; height: 400px;"></div>
+
+    <script type="module">
+      // Load MapLibre's code (JavaScript). Version 6 is loaded as a module, with import.
+      import * as maplibregl from 'https://cdn.jsdelivr.net/npm/maplibre-gl@6.15.0/dist/maplibre-gl.mjs';
+
+      // Make a map with new maplibregl.Map(), and keep it in the variable map.
+      const map = new maplibregl.Map({
+        container: 'mapid',                  // the id of the div above
+        center: [-123.256113, 49.265637],    // [longitude, latitude]
+        zoom: 15,
+        style: 'https://tiles.openfreemap.org/styles/positron'   // a ready-made style from OpenFreeMap
+      });
+
+      // A module keeps its names to itself. This line lets you type map in the browser's console.
+      window.map = map;
+
+      // The raw URL of the UBC building entrance file on GitHub.
+      const url = 'https://raw.githubusercontent.com/UBCGeodata/ubc-geospatial-opendata/master/ubcv/locations/geojson/ubcv_building_entraces.geojson';
+
+      const url2 = 'https://raw.githubusercontent.com/UBCGeodata/ubc-geospatial-opendata/master/ubcv/locations/geojson/ubcv_buildings.geojson';
+      
+      // Paint properties set how the layer draws each circle.
+      // They are kept in a variable, EntrancePaint, as they will be in next Tuesday's sketches.
+      
+      const EntrancePaint = {
+        // A zoom expression: the radius depends on the map's zoom (as in step 8).
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 1, 19, 8],
+        // A data-driven expression: the colour depends on each entrance's ENTRANCE_TYPE value.
+        // 'Main' gives green. 'Secondary' gives yellow. 'Tertiary' gives orange. 'Exit' gives red.
+        // Any other value, or no value, gives grey.
+        'circle-color': ['match', ['get', 'ENTRANCE_TYPE'],
+                         'Main', '#008000',
+                         'Secondary', '#FFFF00',
+                         'Tertiary', '#FFA500',
+                         'Exit', '#FF0000',
+                         '#999999'],
+        'circle-opacity': 0.5
+      };
+
+      const BuildingPaint = {
+        'fill-color': '#Add8e6',
+        'fill-opacity': 0.5
+      };
+      
+      // When someone clicks an entrance on the map, MapLibre runs this function.
+      // e holds information about the click. e.features[0] is the feature (the entrance) that was clicked.
+      function onEachPoint(e) {
+        // entrance holds that feature's attributes, such as ENTRANCE_TYPE.
+        const entrance = e.features[0].properties;
+        // Does this entrance have a type? If it does not, no popup opens.
+        if (entrance.ENTRANCE_TYPE) {
+          const popup = new maplibregl.Popup();
+          popup.setLngLat(e.lngLat);
+          popup.setText(entrance.ENTRANCE_TYPE);
+          popup.addTo(map);
+        }
+      }
+
+      // Add the source and the layer only after the map's style has loaded.
+      map.on('load', function () {
+        // A source holds the data. data: is the raw URL, so MapLibre fetches the file itself.
+        // The entrances only appear when the whole file has arrived. Meanwhile, the browser goes on to map.addLayer() straight away.
+        // attribution is the credit in the map's corner.
+        map.addSource('entrances', {
+          type: 'geojson',
+          data: url,
+          attribution: 'UBC Building Entrances, UBCGeodata'
+        });
+
+        map.addSource('buildings', {
+          type: 'geojson',
+          data: url2,
+          attribution: 'UBC Buildings, UBCGeodata'
+        });
+
+        // A layer says how to draw a source: here, a circle for each entrance.
+        // source: 'entrances' is the name that addSource gave the source above.
+
+        map.addLayer({
+          id: 'building-polygons',
+          type: 'fill',
+          source: 'buildings',
+          paint: BuildingPaint
+        });
+        
+        map.addLayer({
+          id: 'entrance-circles',
+          type: 'circle',
+          source: 'entrances',
+          paint: EntrancePaint
+        });
+
+        // When a circle of the layer 'entrance-circles' is clicked, MapLibre runs onEachPoint.
+        // Write onEachPoint without (). MapLibre runs it later, once for each click.
+        map.on('click', 'entrance-circles', onEachPoint);
+      });
+    </script>
+  </body>
+</html>
 
