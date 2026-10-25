@@ -22,6 +22,20 @@
       center: [-122.5, 41.5],
       zoom: 8
     });
+
+    // When a treatment polygon is clicked, MapLibre runs onEachTreatment:
+
+    function onEachTreatment(e) {
+      const treatment = e.features[0].properties;
+      const popup = new maplibregl.Popup();
+      popup.setLngLat(e.lngLat);
+      popup.setText(treatment.Treatment_Type + ', ' + treatment.YEAR);
+      popup.addTo(map);
+    }
+    
+    map.on('click', 'rx_treatments_layer_1', onEachTreatment);
+
+    // Drawing a p5.js canvas that contains the legend:
     
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
