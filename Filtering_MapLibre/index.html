@@ -25,6 +25,13 @@
     <!-- The web map will go in this div element. -->
     <div id="mapid"></div>
 
+    <div id="controls" style="margin: 15px;">
+      <button id="showAllEntrancesButton">Reset All Entrances</button>
+      <span style="display: inline-block; width: 30px;"></span>
+      <input type="text" id="highlightEntrancesTextEntry" placeholder="e.g. Main">
+      <button id="highlightEntrancesButton">Highlight</button>
+    </div>
+
     <script type="module">
       // Load MapLibre's code (JavaScript). Version 6 is loaded as a module, with import.
       import * as maplibregl from 'https://cdn.jsdelivr.net/npm/maplibre-gl@6.15.0/dist/maplibre-gl.mjs';
@@ -82,6 +89,43 @@
         }
       }
 
+      function addEntrances() {
+        // If the trees are already on the map, stop here.
+        // MapLibre cannot add a second source with the same name.
+        if (map.getSource('entrances')) {
+          return;   // don't add trees twice
+        }
+        map.addSource('entrances', {
+          type: 'geojson',
+          data: url,
+          attribution: 'UBC Building Entrances, UBCGeodata'
+        });
+        map.addLayer({
+          id: 'entrance-circles',
+          type: 'circle',
+          source: 'entrances',
+          paint: EntrancePaint
+        });
+        map.on('click', 'entrance-circles', onEachEntrance);
+      }
+
+      function showAllEntrances() {
+        addEntrances();
+        map.setFilter('entrance-circles', null);
+      }
+      
+      function highlightEntrances() {
+        // .value is the text that is in the box when the button is clicked.
+        addEntrances();
+        const textEntry = document.getElementById('highlightEntrancesTextEntry');
+        const entranceTypeToHighlight = textEntry.value;
+        if (entranceTypeToHighlight === '') {
+          showAllEntrances();
+        return;
+        }
+        map.setFilter('entrance-circles', ['in', entranceTypeToHighlight, ['get', 'ENTRANCE_TYPE']]);
+        }
+
       // Add the source and the layer only after the map's style has loaded.
       map.on('load', function () {
         // A source holds the data. data: is the raw URL, so MapLibre fetches the file itself.
@@ -119,7 +163,14 @@
         // When a circle of the layer 'entrance-circles' is clicked, MapLibre runs onEachPoint.
         // Write onEachPoint without (). MapLibre runs it later, once for each click.
         map.on('click', 'entrance-circles', onEachPoint);
+
+        const button = document.getElementById('showAllEntrancesButton');
+        button.addEventListener('click', showAllEntrances);
+
+        const highlightButton = document.getElementById('highlightEntrancesButton');
+        highlightButton.addEventListener('click', highlightEntrances);
       });
+      
     </script>
   </body>
 </html>
