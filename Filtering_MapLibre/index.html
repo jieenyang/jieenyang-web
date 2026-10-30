@@ -56,17 +56,19 @@
       // They are kept in a variable, EntrancePaint, as they will be in next Tuesday's sketches.
       
       const EntrancePaint = {
-        // A zoom expression: the radius depends on the map's zoom (as in step 8).
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 1, 19, 8],
-        // A data-driven expression: the colour depends on each entrance's ENTRANCE_TYPE value.
-        // 'Main' gives green. 'Secondary' gives yellow. 'Tertiary' gives orange. 'Exit' gives red.
-        // Any other value, or no value, gives grey.
+        // A zoom expression: the radius depends on the map's zoom (as in step 8).
+
         'circle-color': ['match', ['get', 'ENTRANCE_TYPE'],
                          'Main', '#008000',
                          'Secondary', '#FFFF00',
                          'Tertiary', '#FFA500',
                          'Exit', '#FF0000',
                          '#999999'],
+        // A data-driven expression: the colour depends on each entrance's ENTRANCE_TYPE value.
+        // 'Main' gives green. 'Secondary' gives yellow. 'Tertiary' gives orange. 'Exit' gives red.
+        // Any other value, or no value, gives grey.
+
         'circle-opacity': 0.50
       };
 
@@ -75,82 +77,35 @@
         'fill-opacity': 0.50
       };
       
+      function onEachPoint(e) {
       // When someone clicks an entrance on the map, MapLibre runs this function.
       // e holds information about the click. e.features[0] is the feature (the entrance) that was clicked.
-      function onEachPoint(e) {
-        // entrance holds that feature's attributes, such as ENTRANCE_TYPE.
+
         const entrance = e.features[0].properties;
-        // Does this entrance have a type? If it does not, no popup opens.
+        // entrance holds that feature's attributes, such as ENTRANCE_TYPE.
+
         if (entrance.ENTRANCE_TYPE) {
           const popup = new maplibregl.Popup();
           popup.setLngLat(e.lngLat);
           popup.setText(entrance.ENTRANCE_TYPE + ' doorway, ' + entrance.NUM_DOORS + ' door(s)');
           popup.addTo(map);
         }
+        // Does this entrance have a type? If it does not, no popup opens.
+        
       }
 
       function addEntrances() {
-        // If the trees are already on the map, stop here.
-        // MapLibre cannot add a second source with the same name.
+        
         if (map.getSource('entrances')) {
-          return;   // don't add trees twice
+          return;   // don't add entrances twice
         }
+        // If the entrances are already on the map, stop here.
+        // MapLibre cannot add a second source with the same name.
+        
         map.addSource('entrances', {
           type: 'geojson',
           data: url,
           attribution: 'UBC Building Entrances, UBCGeodata'
-        });
-        map.addLayer({
-          id: 'entrance-circles',
-          type: 'circle',
-          source: 'entrances',
-          paint: EntrancePaint
-        });
-        map.on('click', 'entrance-circles', onEachEntrance);
-      }
-
-      function showAllEntrances() {
-        addEntrances();
-        map.setFilter('entrance-circles', null);
-      }
-      
-      function highlightEntrances() {
-        // .value is the text that is in the box when the button is clicked.
-        addEntrances();
-        const textEntry = document.getElementById('highlightEntrancesTextEntry');
-        const entranceTypeToHighlight = textEntry.value;
-        if (entranceTypeToHighlight === '') {
-          showAllEntrances();
-        return;
-        }
-        map.setFilter('entrance-circles', ['in', entranceTypeToHighlight, ['get', 'ENTRANCE_TYPE']]);
-        }
-
-      // Add the source and the layer only after the map's style has loaded.
-      map.on('load', function () {
-        // A source holds the data. data: is the raw URL, so MapLibre fetches the file itself.
-        // The entrances only appear when the whole file has arrived. Meanwhile, the browser goes on to map.addLayer() straight away.
-        // attribution is the credit in the map's corner.
-        map.addSource('entrances', {
-          type: 'geojson',
-          data: url,
-          attribution: 'UBC Building Entrances, UBCGeodata'
-        });
-
-        map.addSource('buildings', {
-          type: 'geojson',
-          data: url2,
-          attribution: 'UBC Buildings, UBCGeodata'
-        });
-
-        // A layer says how to draw a source: here, a circle for each entrance.
-        // source: 'entrances' is the name that addSource gave the source above.
-
-        map.addLayer({
-          id: 'building-polygons',
-          type: 'fill',
-          source: 'buildings',
-          paint: BuildingPaint
         });
         
         map.addLayer({
@@ -159,10 +114,46 @@
           source: 'entrances',
           paint: EntrancePaint
         });
-
-        // When a circle of the layer 'entrance-circles' is clicked, MapLibre runs onEachPoint.
-        // Write onEachPoint without (). MapLibre runs it later, once for each click.
+        
         map.on('click', 'entrance-circles', onEachPoint);
+        
+      }
+
+      function showAllEntrances() {
+        addEntrances();
+        map.setFilter('entrance-circles', null);
+      }
+      
+      function highlightEntrances() {
+        addEntrances();
+        const textEntry = document.getElementById('highlightEntrancesTextEntry');
+        const entranceTypeToHighlight = textEntry.value;
+        // .value refers to the text in the box when the button is clicked.
+        if (entranceTypeToHighlight === '') {
+          showAllEntrances();
+        return;
+        }
+        map.setFilter('entrance-circles', ['in', entranceTypeToHighlight, ['get', 'ENTRANCE_TYPE']]);
+      }
+
+      map.on('load', function () {
+        // Adding the sources, layers, and buttons to the map when it opens, but only after the map's style has loaded.
+        // The layers only get added when the whole file has loaded from the source link.
+        
+        map.addSource('buildings', {
+          type: 'geojson',
+          data: url2,
+          attribution: 'UBC Buildings, UBCGeodata'
+        });
+        
+        map.addLayer({
+          id: 'building-polygons',
+          type: 'fill',
+          source: 'buildings',
+          paint: BuildingPaint
+        });
+
+        addEntrances();
 
         const button = document.getElementById('showAllEntrancesButton');
         button.addEventListener('click', showAllEntrances);
