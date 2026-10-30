@@ -122,6 +122,12 @@
       function showAllEntrances() {
         addEntrances();
         map.setFilter('entrance-circles', null);
+        
+        map.setPaintProperty('entrance-circles', 'circle-color', EntrancePaint['circle-color']);
+        map.setPaintProperty('entrance-circles', 'circle-opacity', EntrancePaint['circle-opacity']);
+        // Resetting to default paint properties 
+        // EntrancePaint['circle-color'] is the 'circle-color' value inside EntrancePaint.
+        // A name with a hyphen is written this way (in square brackets and quotes)
       }
       
       function highlightEntrances() {
@@ -134,10 +140,13 @@
         return;
         }
         map.setFilter('entrance-circles', ['in', entranceTypeToHighlight, ['get', 'ENTRANCE_TYPE']]);
+        map.setPaintProperty('entrance-circles', 'circle-color', '#0096FF');
+        map.setPaintProperty('entrance-circles', 'circle-opacity', 0.9);
+        // When highlighted, the circles are drawn in a bright colour and with higher opacity.
       }
 
       map.on('load', function () {
-        // Adding the sources and layers to the map when it opens, but only after the map's style has loaded.
+        // Adding the sources, layers, and buttons to the map when it opens, but only after the map's style has loaded.
         // The layers only get added when the whole file has loaded from the source link.
         
         map.addSource('buildings', {
