@@ -19,20 +19,28 @@
     const map = new maplibregl.Map({
       container: 'map',
       style: 'https://jieenyang.github.io/jieenyang-web/geos472-lab-2/california_fuel_treatments_style.json',
-      center: [-120, 37.7],
+      center: [-120, 37.5],
       zoom: 5.2
     });
 
-    // Popup: shows a clicked treatment's type, year and name.
+    // Adapted from the onEachTree function of Day 13 slides, where,
+    // when a treatment polygon is clicked, MapLibre runs onEachTreatment,
+    // which shows the treatment's type, year, and name:
+    
     function onEachTreatment(e) {
-      const t = e.features[0].properties;
-      const name = t.TREAT_NAME || 'Unnamed project';
+      const treatment = e.features[0].properties;
+      let name; // declaring the treatment name variable without assignment
+      if (treatment.TREAT_NAME) {
+        name = treatment.TREAT_NAME;
+      } else { // If the feature does not have a TREAT_NAME, it is labelled 'unnamed project'.
+        name = 'unnamed project';
+      }
       const popup = new maplibregl.Popup();
       popup.setLngLat(e.lngLat);
-      popup.setHTML(
-        '<strong>' + name + '</strong><br>' +
-        'Treatment type: ' + t.Treatment_Type + '<br>' +
-        'Year: ' + t.YEAR
+      popup.setHTML( // using the setHTML method instead to enable line switch 
+        'Name: ' + name + '<br>' +
+        'Type: ' + treatment.Treatment_Type + '<br>' +
+        'Year: ' + treatment.YEAR
       );
       popup.addTo(map);
     }
