@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>California prescribed fire treatments</title>
+  <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+  <style>
+    body { margin: 0; }
+    #map { position: absolute; inset: 0; }
+    #map canvas.p5Canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://jieenyang.github.io/jieenyang-web/geos472-lab-2/california_fuel_treatments_style.json',
+      center: [-119.4, 37.2],
+      zoom: 5.5
+    });
+
+    // Popup: shows a clicked treatment's type, year and name.
+    function onEachTreatment(e) {
+      const t = e.features[0].properties;
+      const name = t.TREAT_NAME || 'Unnamed project';
+      const popup = new maplibregl.Popup();
+      popup.setLngLat(e.lngLat);
+      popup.setHTML(
+        '<strong>' + name + '</strong><br>' +
+        'Treatment type: ' + t.Treatment_Type + '<br>' +
+        'Year: ' + t.YEAR
+      );
+      popup.addTo(map);
+    }
+
+    map.on('mouseenter', 'ca_treatments_fill', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'ca_treatments_fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+    map.on('click', 'ca_treatments_fill', onEachTreatment);
+
+    function setup() {
+      const canvas = createCanvas(windowWidth, windowHeight);
+      canvas.parent('map');
+      noLoop();
+    }
+
+    function drawLegend() {
+
+      const x = 10, y = 10;
+      const legendWidth = 230, legendHeight = 150;
+      noStroke();
+      fill(255, 255, 255, 220);
+      rect(x, y, legendWidth, legendHeight, 5);
+
+      fill(20);
+      textSize(13);
+      textStyle(BOLD);
+      text("Prescribed Fire Treatments in California", x + 10, y + 8, legendWidth - 20, 40);
+      textStyle(NORMAL);
+
+      textSize(12);
+      fill(70);
+      text("Treatment type:", x + 10, y + 55);
+
+      const treatment_rows = [
+        ["Broadcast Burn", 215, 25, 28],
+        ["Machine Pile Burn", 43, 131, 186],
+        ["Hand Pile Burn", 123, 50, 148],
+        ["Jackpot Burn", 230, 97, 1]
+      ];
+
+      let row_y_position = y + 65;
+      for (const [label, r, g, b] of treatment_rows) {
+        noStroke();
+        fill(r, g, b);
+        rect(x + 10, row_y_position, 14, 14, 2);
+        fill(20);
+        textSize(12);
+        text(label, x + 30, row_y_position + 13);
+        row_y_position = row_y_position + 20;
+      }
+
+    }
+
+    function draw() {
+      clear();
+      drawLegend();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      redraw();
+    }
+
+  </script>
+</body>
+</html>
