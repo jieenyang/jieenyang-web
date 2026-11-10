@@ -46,14 +46,22 @@
       popup.addTo(map);
     }
 
+    // Changing the cursor to a pointer when the mouse is over the treatment polygons layer,
+    // drawing from this example (https://maplibre.org/maplibre-gl-js/docs/examples/show-polygon-information-on-click/):
+    
     map.on('mouseenter', 'ca_treatments_fill', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
     map.on('mouseleave', 'ca_treatments_fill', () => {
       map.getCanvas().style.cursor = '';
     });
+
+    // ca_treatments_fill has been read in as a layer object from the style json
     map.on('click', 'ca_treatments_fill', onEachTreatment);
 
+    // p5.js is used here to draw a legend on top of the MapLibre map
+    // The specific techniques are drawn from our Meteorite Landings tutorial
+    
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('map');
@@ -62,22 +70,26 @@
 
     function drawLegend() {
 
+      // legend panel
       const x = 10, y = 10;
       const legendWidth = 230, legendHeight = 150;
       noStroke();
       fill(255, 255, 255, 220);
       rect(x, y, legendWidth, legendHeight, 5);
 
+      // title font
       fill(20);
       textSize(13);
       textStyle(BOLD);
       text("Prescribed Fire Treatments in California", x + 10, y + 8, legendWidth - 20, 40);
       textStyle(NORMAL);
 
+      // text font
       textSize(12);
       fill(70);
       text("Treatment type:", x + 10, y + 55);
 
+      // an array of the four treatment types
       const treatment_rows = [
         ["Broadcast Burn", 215, 25, 28],
         ["Machine Pile Burn", 43, 131, 186],
@@ -85,6 +97,7 @@
         ["Jackpot Burn", 230, 97, 1]
       ];
 
+      // positioning and labelling the four legend entries
       let row_y_position = y + 65;
       for (const [label, r, g, b] of treatment_rows) {
         noStroke();
