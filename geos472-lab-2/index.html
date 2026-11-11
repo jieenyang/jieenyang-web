@@ -63,6 +63,8 @@
       zoom: 5.2
     });
 
+    // PART 1: FUNCTION FOR THE RESET BUTTON
+
     // Adapted from the onEachTree function of Day 13 slides, where,
     // when a treatment polygon is clicked, MapLibre runs onEachTreatment,
     // which shows the treatment's type, year, and name:
@@ -96,8 +98,35 @@
     });
 
     // ca_treatments_fill has been read in as a layer object from the style json
+    // now, everytime a treatment polygon is clicked, it will run onEachTreatment
     map.on('click', 'ca_treatments_fill', onEachTreatment);
 
+    // PART 2: FUNCTION FOR THE DROPDOWN MENU
+
+    // Filters the treatment polygons by Linearity_Class when the dropdown changes.
+    // Adapted from the Filtering 2 slides' highlightTrees() pattern (Day 14),
+    // using a dropdown's 'change' event instead of a button's 'click' event,
+    // and an equality check instead of the 'in' (substring) expression, since
+    // Linearity_Class is a closed set of exact categories rather than open text.
+    
+    function applyLinearityFilter() {
+      const dropdown = document.getElementById('linearityDropdown');
+      const selected = dropdown.value;
+    
+      if (selected === '') {
+        map.setFilter('ca_treatments_fill', null);
+      } else {
+        map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], selected]);
+      }
+    }
+    
+    const linearityDropdown = document.getElementById('linearityDropdown');
+    linearityDropdown.addEventListener('change', applyLinearityFilter);
+
+    // PART 3: FUNCTION FOR THE SLIDER
+    
+    // PART 4: DRAWING THE LEGEND WITH P5
+    
     // p5.js is used here to draw a legend on top of the MapLibre map
     // The specific techniques are drawn from our Meteorite Landings tutorial
     
