@@ -105,28 +105,32 @@
     // PART 2: FUNCTION FOR THE DROPDOWN MENU
 
     // Filters the treatment polygons by Linearity_Class when the dropdown changes.
-    // Adapted from the Filtering 2 slides' highlightTrees() pattern (Day 14),
-    // using a dropdown's 'change' event instead of a button's 'click' event,
-    // and an equality check instead of the 'in' (substring) expression, since
-    // Linearity_Class is a closed set of exact categories rather than open text.
+    // Referencing the highlightTrees() function of Day 14 slides.
     
-    function applyLinearityFilter() {
+    function filteringLinearity() {
       const dropdown = document.getElementById('linearityDropdown');
-      const selected = dropdown.value;
+      const selection = dropdown.value; // takes the value of the selection
     
-      if (selected === '') {
+      if (selection === '') {
         map.setFilter('ca_treatments_fill', null);
       } else {
-        map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], selected]);
+        map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], selection]);
+        // Unlike the Day 14 example which uses 'in' to checking whether a substring is within the string, 
+        // here I use '==' to check if Linearity_Class matches directly with categories of ca_treatments_fill
+        // As a result, the syntax is slightly different, changing from ['in', value, property] to ['==', property, value]. 
       }
     }
-    
-    const linearityDropdown = document.getElementById('linearityDropdown');
-    linearityDropdown.addEventListener('change', applyLinearityFilter);
 
-    // PART 3: FUNCTION FOR THE SLIDER
+    const linearityDropdown = document.getElementById('linearityDropdown');
+    linearityDropdown.addEventListener('change', filteringLinearity);
+    // Also, unlike in the Day 14 example, which used the 'click' event listener, I am using the 'change' event listener
+    // Because the 'change' event only triggers when I select a different option from the dropdown.
+    // Otherwise, if I were to use 'click', the event actually got triggered when I clicked on the dropdown itself,
+    // not when I change to a new Linearity_Class.
+
+    // PART 3: ...
     
-    // PART 4: DRAWING THE LEGEND WITH P5
+    // PART 4: DRAWING THE LEGEND WITH P5.JS
     
     // p5.js is used here to draw a legend on top of the MapLibre map
     // The specific techniques are drawn from our Meteorite Landings tutorial
