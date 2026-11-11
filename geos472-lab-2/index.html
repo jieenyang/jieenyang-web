@@ -42,12 +42,19 @@
   <div id="map"></div>
   <!-- creating a container called "controls", which include a reset button and a dropdown menu -->
   <div id="controls">
+    
     <!-- creating the text label of the reset button -->
-    <label for="resetButton">Show All Records:</label>
     <!-- creating the reset button, drawing from the Filtering MapLibre tutorial of Day 14 -->
-    <button id="resetButton">Reset</button>
-    <!-- creating the text label of the dropdown menu -->
-    <label for="linearityDropdown">Filter by Linearity:</label>
+    <button id="resetButton">Reset All Records</button>
+
+    <!-- creating geometry selection buttons -->
+    <label>Select by Geometry Only:</label>
+    <button id="showLinearButton">Linear</button>
+    <button id="showNonLinearButton">Non-Linear</button>
+    <button id="showAmbiguousButton">Ambiguous</button>
+    
+    <!-- creating the text label for the dropdown menu and the year slider -->
+    <label>Select by Geometry and Year:</label>
     
     <!-- creating the dropdown menu -->
     <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
@@ -59,7 +66,6 @@
     </select>
     
     <!-- creating the year slider, referencing the slider example from Day 16 slides -->
-    <label for="yearSlider">Filter by Year:</label>
     <input type="range" id="yearSlider" min="2010" max="2025" value="2010" step="1">
     <span id="yearLabel">2010</span>
   </div>
@@ -168,7 +174,7 @@
     // If I drag across multiple years at once, 'change' will only update once; however, 'input'
     // will update everytime the slider value's step changes.
 
-    // PART 3: FUNCTION FOR THE RESET BUTTON
+    // PART 3: FUNCTIONS FOR THE RESET BUTTON
 
     // Again, referencing the Day 14 slides.
     
@@ -181,8 +187,40 @@
       // Simultaneously setting the dropdown value to '', which is value of the “All” dropdown option.
     }
     
+    function showLinearAllYears() {
+      map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Linear']);
+      // Filtering to Linear polygons, irrespective of YEAR
+      linearityDropdown.value = 'Linear';
+      // Simultaneously setting the dropdown's value to linear
+    }
+    
+    function showNonLinearAllYears() {
+      map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Non-Linear']);
+      // Filtering to Non-Linear polygons, irrespective of YEAR
+      linearityDropdown.value = 'Non-Linear';
+      // Simultaneously setting the dropdown's value to non-linear
+    }
+   
+    function showAmbiguousAllYears() {
+      map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Ambiguous']);
+      // Filtering to Ambiguous polygons, irrespective of YEAR
+      linearityDropdown.value = 'Ambiguous';
+      // Simultaneously setting the dropdown's value to ambiguous
+    }
+
+    // event listener for the buttons:
+    
     const resetButton = document.getElementById('resetButton');
     resetButton.addEventListener('click', showAllTreatments);
+    
+    const showLinearButton = document.getElementById('showLinearButton');
+    showLinearButton.addEventListener('click', showLinearAllYears);
+
+    const showNonLinearButton = document.getElementById('showNonLinearButton');
+    showNonLinearButton.addEventListener('click', showNonLinearAllYears);
+
+    const showAmbiguousButton = document.getElementById('showAmbiguousButton');
+    showAmbiguousButton.addEventListener('click', showAmbiguousAllYears);
     
     // PART 4: DRAWING THE LEGEND WITH P5.JS
     
