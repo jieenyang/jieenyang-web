@@ -13,18 +13,20 @@
     /* creating and styling the child element canvas.p5Canvas under the parent element map */
     #map canvas.p5Canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
     #controls {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
+      position: absolute; /* placing the controls panel manually */
+      bottom: 20px; /* placing the controls panel 20 pixels above the browser's bottom, */
+                    /* because the browser window is the only explicitly positioned ancestor */
+      left: 10px; /* placing the panel 10 pixels to the right of the left edge */
+      z-index: 2; /* ordering the panel on top of the p5 canvas with the legend */
       background: rgba(255,255,255,0.92);
-      padding: 10px 16px;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      padding: 10px 16px; /* setting internal distance between text the edge of the box */
+      border-radius: 6px; /* rounding corners */
+      display: flex; /* bringing in Flexible Box Layout for display */
+      flex-direction: column; /* changing layout direction from horizontal to vertical */
+      gap: 5px; /* setting space between the buttons */
+    }
+    #controls label {
+      font-size: 12px; /* adjusting label font */
     }
   </style>
 </head>
@@ -34,12 +36,16 @@
   <div id="map"></div>
   <!-- creating a container called "controls", which include a reset button and a dropdown menu -->
   <div id="controls">
+    <!-- creating the text label of the reset button -->
+    <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
+    <label for="resetButton">Show All Records:</label>
     <!-- creating the reset button, drawing from the Filtering MapLibre tutorial of Day 14 -->
-    <button id="resetButton">Show All Treatments</button>
+    <button id="resetButton">Reset</button>
     <!-- creating the text label of the dropdown menu -->
     <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
-    <label for="linearityDropdown">Filter by linearity:</label>
+    <label for="linearityDropdown">Filter by Linearity:</label>
     <!-- creating the dropdown menu -->
+    <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
     <select id="linearityDropdown">
       <option value="">All</option>
       <option value="Linear">Linear</option>
