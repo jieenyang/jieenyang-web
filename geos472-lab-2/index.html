@@ -12,18 +12,21 @@
     #map { position: absolute; inset: 0; }
     /* creating and styling the child element canvas.p5Canvas under the parent element map */
     #map canvas.p5Canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
+    /* setting the position and layout of the controls panel, drawing from positioning and flexbox tutorials
+    https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Positioning
+    https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox */
     #controls {
       position: absolute; /* placing the controls panel manually */
-      bottom: 20px; /* placing the controls panel 20 pixels above the browser's bottom, */
-                    /* because the browser window is the only explicitly positioned ancestor */
+      bottom: 20px; /* placing the controls panel 20 pixels above the browser's bottom,
+                    because the browser window is the only explicitly positioned ancestor */
       left: 10px; /* placing the panel 10 pixels to the right of the left edge */
-      z-index: 2; /* ordering the panel on top of the p5 canvas with the legend */
-      background: rgba(255,255,255,0.92);
+      z-index: 2; /* ordering the panel on top of the p5 canvas, which includes the legend */
+      background: rgba(255,255,255,0.9);
       padding: 10px 16px; /* setting internal distance between text the edge of the box */
       border-radius: 6px; /* rounding corners */
       display: flex; /* bringing in Flexible Box Layout for display */
       flex-direction: column; /* changing layout direction from horizontal to vertical */
-      gap: 5px; /* setting space between the buttons */
+      gap: 5px; /* setting space between each control */
     }
     #controls label {
       font-size: 12px; /* adjusting label font */
@@ -37,12 +40,10 @@
   <!-- creating a container called "controls", which include a reset button and a dropdown menu -->
   <div id="controls">
     <!-- creating the text label of the reset button -->
-    <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
     <label for="resetButton">Show All Records:</label>
     <!-- creating the reset button, drawing from the Filtering MapLibre tutorial of Day 14 -->
     <button id="resetButton">Reset</button>
     <!-- creating the text label of the dropdown menu -->
-    <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
     <label for="linearityDropdown">Filter by Linearity:</label>
     <!-- creating the dropdown menu -->
     <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
