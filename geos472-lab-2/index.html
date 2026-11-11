@@ -98,10 +98,13 @@
       }
       const popup = new maplibregl.Popup();
       popup.setLngLat(e.lngLat);
-      popup.setHTML( // using the setHTML method instead to enable line switch 
+      popup.setHTML( // using the setHTML method instead of setText in the class example to enable line switch 
         'Name: ' + name + '<br>' +
         'Type: ' + treatment.Treatment_Type + '<br>' +
-        'Year: ' + treatment.YEAR
+        'Year: ' + treatment.YEAR +
+        'Agency: ' + treatment.AGENCY +
+        'Unit: ' + treatment.UNIT_ID +
+        'Shape Index: ' + treatment.SI.toFixed(3)
       );
       popup.addTo(map);
     }
