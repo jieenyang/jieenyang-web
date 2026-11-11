@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+  
 <head>
   <meta charset="utf-8">
   <title>California prescribed fire treatments</title>
@@ -13,8 +14,25 @@
     #map canvas.p5Canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
   </style>
 </head>
+  
 <body>
+  <!-- creating a container with the id "map", which Maplibre will later supply the style json to. -->
   <div id="map"></div>
+  <!-- creating a container called "controls", which include a reset button and a dropdown menu -->
+  <div id="controls">
+    <!-- creating the reset button, drawing from the Filtering MapLibre tutorial of Day 14 -->
+    <button id="resetButton">Show All Treatments</button>
+    <!-- creating the text label of the dropdown menu -->
+    <label for="linearityDropdown">Filter by linearity:</label>
+    <!-- creating the dropdown menu -->
+    <select id="linearityDropdown">
+      <option value="">All</option>
+      <option value="Linear">Linear</option>
+      <option value="Non-Linear">Non-Linear</option>
+      <option value="Ambiguous">Ambiguous</option>
+    </select>
+  </div>
+  
   <script>
 
     const map = new maplibregl.Map({
@@ -122,5 +140,7 @@
     }
 
   </script>
+  
 </body>
+  
 </html>
