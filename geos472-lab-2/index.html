@@ -29,7 +29,10 @@
       gap: 5px; /* setting space between each control */
     }
     #controls label {
-      font-size: 12px; /* adjusting label font */
+      font-size: 12px; /* adjusting the font of the <label> elements under controls */
+    }
+    #controls span {
+      font-size: 12px; /* adjusting the font of the year label, which is a <span> element */
     }
   </style>
 </head>
@@ -45,6 +48,7 @@
     <button id="resetButton">Reset</button>
     <!-- creating the text label of the dropdown menu -->
     <label for="linearityDropdown">Filter by Linearity:</label>
+    
     <!-- creating the dropdown menu -->
     <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
     <select id="linearityDropdown">
@@ -53,6 +57,11 @@
       <option value="Non-Linear">Non-Linear</option>
       <option value="Ambiguous">Ambiguous</option>
     </select>
+    
+    <!-- creating the year slider, referencing the slider example from Day 16 slides -->
+    <label for="yearSlider">Filter by Year:</label>
+    <input type="range" id="yearSlider" min="2010" max="2025" value="2010" step="1">
+    <span id="yearLabel">2010</span>
   </div>
   
   <script>
@@ -102,31 +111,62 @@
     // now, everytime a treatment polygon is clicked, it will run onEachTreatment
     map.on('click', 'ca_treatments_fill', onEachTreatment);
 
-    // PART 2: FUNCTION FOR THE DROPDOWN MENU
+    // PART 2: FILTERING FUNCTION FOR THE DROPDOWN MENU AND YEAR SLIDER
 
     // Filters the treatment polygons by Linearity_Class when the dropdown changes.
-    // Referencing the highlightTrees() function of Day 14 slides.
-    
-    function filteringLinearity() {
-      const dropdown = document.getElementById('linearityDropdown');
-      const selection = dropdown.value; // takes the value of the selection
-    
-      if (selection === '') {
-        map.setFilter('ca_treatments_fill', null);
-      } else {
-        map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], selection]);
+    // Referencing the highlightTrees() function of Day 14 slides and the slider example from Day 16 slides
+
+    const linearityDropdown = document.getElementById('linearityDropdown');
+    const yearSlider = document.getElementById('yearSlider');
+    const yearLabel = document.getElementById('yearLabel');
+    // bringing in the html elements
+
+    function filteringLinearityAndYear() {
+      const linearitySelection = linearityDropdown.value; // takes the value of the selection
+      const yearSelection = Number(yearSlider.value); // converts the slider values (text) into number, like in the Day 16 slides.
+
+      yearLabel.textContent = yearSelection;
+      // updating the label to show the year selected, like in the Day 16 slides.
+
+      // Filtering for year:
+      const yearFilter = ['==', ['get', 'YEAR'], yearSelection];
+      // The filter searches directly in the GeoJSON linked as source in my style json file.
+      // Unlike the Day 14 example which uses 'in' to checking whether a substring is within the string, 
+      // here I use '==' to check if YEAR matches directly with the numbers from yearSelection
+      // As a result, the syntax is slightly different, changing from ['in', value, property] to ['==', property, value].
+
+      // Filtering for linearity without linearity selection:
+      // When no linearity is selected, i.e. dropdown set to "All", filter for treatments that fall under the slider's year,
+      // without applying any linearity filter at all.
+      if (linearitySelection === '') {
+        map.setFilter('ca_treatments_fill', yearFilter);
+      }
+
+      // Filtering for linearity with linearity selection:
+      // When there is a dropdown selection other than "All", the logic
+      // must now simultaneously consider both linearity and year filters.
+      else {
+        const linearityFilter = ['==', ['get', 'Linearity_Class'], linearitySelection];
         // Unlike the Day 14 example which uses 'in' to checking whether a substring is within the string, 
         // here I use '==' to check if Linearity_Class matches directly with categories of ca_treatments_fill
-        // As a result, the syntax is slightly different, changing from ['in', value, property] to ['==', property, value]. 
+
+        // Putting together both filters:
+        map.setFilter('ca_treatments_fill', ['all', yearFilter, linearityFilter]);
+        // Next, applying a filter for both using both the yearFilter and the linearityFilter,
+        // so the map only shows what satisfies both the year and the linearity class.
       }
     }
 
-    const linearityDropdown = document.getElementById('linearityDropdown');
-    linearityDropdown.addEventListener('change', filteringLinearity);
+    linearityDropdown.addEventListener('change', filteringLinearityAndYear);
     // Also, unlike in the Day 14 example, which used the 'click' event listener, I am using the 'change' event listener
     // Because the 'change' event only triggers when I select a different option from the dropdown.
     // Otherwise, if I were to use 'click', the event actually got triggered when I clicked on the dropdown itself,
     // not when I change to a new Linearity_Class.
+
+    yearSlider.addEventListener('input', filteringLinearityAndYear);
+    // Similarly, adding an event listener for the year slider, just like in the Day 16 tutorial.
+    // If I drag across multiple years at once, 'change' will only update once; however, 'input'
+    // will update everytime the slider value's step changes.
 
     // PART 3: FUNCTION FOR THE RESET BUTTON
 
