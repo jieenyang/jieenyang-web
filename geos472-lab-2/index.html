@@ -128,7 +128,21 @@
     // Otherwise, if I were to use 'click', the event actually got triggered when I clicked on the dropdown itself,
     // not when I change to a new Linearity_Class.
 
-    // PART 3: ...
+    // PART 3: FUNCTION FOR THE RESET BUTTON
+
+    // Again, referencing the Day 14 slides.
+    
+    function showAllTreatments() {
+      map.setFilter('ca_treatments_fill', null); 
+      // In my case, I don't need something like addTrees() in the Day 14 example,
+      // because I am not readding the layer from the source every time,
+      // but rather directly resetting the filtering setting.
+      linearityDropdown.value = ''; 
+      // Simultaneously setting the dropdown value to '', which is value of the “All” dropdown option.
+    }
+    
+    const resetButton = document.getElementById('resetButton');
+    resetButton.addEventListener('click', showAllTreatments);
     
     // PART 4: DRAWING THE LEGEND WITH P5.JS
     
