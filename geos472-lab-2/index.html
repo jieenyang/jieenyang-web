@@ -188,6 +188,11 @@
       // but rather directly resetting the filtering setting.
       linearityDropdown.value = ''; 
       // Simultaneously setting the dropdown value to '', which is value of the “All” dropdown option.
+
+      yearSlider.value = 2010;
+      yearLabel.textContent = '2010';
+      // Setting the slider back to the earliest year, which is the default value.
+      // Though it is not necessary, I think it is more intuitive to reset the slider as well.
     }
     
     function showLinearAllYears() {
