@@ -24,7 +24,7 @@
       background: rgba(255,255,255,0.9);
       padding: 10px 16px; /* setting internal distance between text the edge of the box */
       border-radius: 6px; /* rounding corners */
-      display: flex; /* bringing in Flexible Box Layout for display */
+      display: flex; /* bringing in Flexible Box Layout for display, applied to each direct children element */
       flex-direction: column; /* changing layout direction from horizontal to vertical */
       gap: 5px; /* setting space between each control */
     }
@@ -70,6 +70,13 @@
     <span id="yearLabel">2010</span>
 
     <label>To select by year exclusively, <br>  set geometry to "All". </label>
+
+    <!-- creating the checkbox for satellite view: https://www.w3schools.com/tags/att_input_type_checkbox.asp -->
+    <label>
+      Turn on Satellite View:
+      <input type="checkbox" id="satelliteViewCheckbox">
+      <!-- nesting the checkbox inside its label element so they remain the same line using flexbox-->
+    </label>
     
   </div>
   
@@ -232,8 +239,28 @@
 
     const showAmbiguousButton = document.getElementById('showAmbiguousButton');
     showAmbiguousButton.addEventListener('click', showAmbiguousGeometryAllYears);
+
+    // PART 4: FUNCTION FOR SATELLITE VIEW CHECKBOX
     
-    // PART 4: DRAWING THE LEGEND WITH P5.JS
+    function turnSatelliteViewOnOff(e) {
+    // Whenever e, the event object is detected after a change, it is passed through this function
+      let visibilityStatus;
+      if (e.target.checked) { // converts the event object to html object, then determine if the box is checked
+                              //  https://maplibre.org/maplibre-gl-js/docs/examples/filter-symbols-by-toggling-a-list/
+        visibilityStatus = 'visible';
+      }
+      else {
+        visibilityStatus = 'none';
+      }
+      map.setLayoutProperty('satellite_imagery_layer', 'visibility', visibilityStatus);
+      // The .setLayoutProperty() method takes (1) layer name, (2) the layer's property, and (3) what property to set to.
+      // Referencing the setLayoutProperty method from the same toggling example as above:
+      // https://maplibre.org/maplibre-gl-js/docs/examples/filter-symbols-by-toggling-a-list/
+    }
+
+    satelliteViewCheckbox.addEventListener('change', turnSatelliteViewOnOff);
+    
+    // PART 5: DRAWING THE LEGEND WITH P5.JS
     
     // p5.js is used here to draw a legend on top of the MapLibre map
     // The specific techniques are drawn from our Meteorite Landings tutorial
