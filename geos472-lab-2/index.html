@@ -198,21 +198,21 @@
       // Though it is not necessary, I think it is more intuitive to reset the slider as well.
     }
     
-    function showLinearAllYears() {
+    function showLinearGeometryAllYears() {
       map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Linear']);
       // Filtering to Linear polygons, irrespective of YEAR
       linearityDropdown.value = 'Linear';
       // Simultaneously setting the dropdown's value to linear
     }
     
-    function showNonLinearAllYears() {
+    function showNonLinearGeometryAllYears() {
       map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Non-Linear']);
       // Filtering to Non-Linear polygons, irrespective of YEAR
       linearityDropdown.value = 'Non-Linear';
       // Simultaneously setting the dropdown's value to non-linear
     }
    
-    function showAmbiguousAllYears() {
+    function showAmbiguousGeometryAllYears() {
       map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Ambiguous']);
       // Filtering to Ambiguous polygons, irrespective of YEAR
       linearityDropdown.value = 'Ambiguous';
@@ -225,13 +225,13 @@
     resetButton.addEventListener('click', showAllTreatments);
     
     const showLinearButton = document.getElementById('showLinearButton');
-    showLinearButton.addEventListener('click', showLinearAllYears);
+    showLinearButton.addEventListener('click', showLinearGeometryAllYears);
 
     const showNonLinearButton = document.getElementById('showNonLinearButton');
-    showNonLinearButton.addEventListener('click', showNonLinearAllYears);
+    showNonLinearButton.addEventListener('click', showNonLinearGeometryAllYears);
 
     const showAmbiguousButton = document.getElementById('showAmbiguousButton');
-    showAmbiguousButton.addEventListener('click', showAmbiguousAllYears);
+    showAmbiguousButton.addEventListener('click', showAmbiguousGeometryAllYears);
     
     // PART 4: DRAWING THE LEGEND WITH P5.JS
     
