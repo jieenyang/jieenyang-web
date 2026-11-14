@@ -112,8 +112,8 @@
         'Agency: ' + treatment.AGENCY + '<br>' +
         'Unit: ' + treatment.UNIT_ID + '<br>' +
         'Shape Index: ' + treatment.SI.toFixed(3) + '<br>' +
-        'Aspect Ratio: ' + treatment.Aspect_Ratio + '<br>' +
-        'Fill Ratio: ' + treatment.Fill_Ratio
+        'Aspect Ratio: ' + treatment.Aspect_Ratio.toFixed(3) + '<br>' +
+        'Fill Ratio: ' + treatment.Fill_Ratio.toFixed(3)
       );
       popup.addTo(map);
     }
