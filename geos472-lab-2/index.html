@@ -94,7 +94,7 @@
     // Adapted from the onEachTree function of Day 13 slides, where,
     // when a treatment polygon is clicked, MapLibre runs onEachTreatment,
     // which shows the treatment's type, year, and name:
-    
+
     function onEachTreatment(e) {
       const treatment = e.features[0].properties;
       let name; // declaring the treatment name variable without assignment
@@ -117,16 +117,6 @@
       );
       popup.addTo(map);
     }
-
-    // Changing the cursor to a pointer when the mouse is over the treatment polygons layer,
-    // drawing from this example (https://maplibre.org/maplibre-gl-js/docs/examples/show-polygon-information-on-click/):
-    
-    map.on('mouseenter', 'ca_treatments_fill', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'ca_treatments_fill', () => {
-      map.getCanvas().style.cursor = '';
-    });
 
     // ca_treatments_fill has been read in as a layer object from the style json
     // now, everytime a treatment polygon is clicked, it will run onEachTreatment
