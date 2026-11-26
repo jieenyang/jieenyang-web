@@ -1,6 +1,6 @@
 # The Evolution of Spatial Characteristics of Fuel Reduction Projects in California, 2010-25
 
-Link: https://jieenyang.github.io/jieenyang-web/geos472-lab-2/
+Link: https://jieenyang.github.io/jieenyang-web/interactive-rx-fire-treatments-california/
 
 ## Reflective Analysis - Purpose and Audience
 
