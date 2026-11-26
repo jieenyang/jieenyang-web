@@ -1,6 +1,6 @@
 # Mapping Fuel Reduction Projects in the Klamath National Forest, California
 
-Link: https://jieenyang.github.io/jieenyang-web/geos472-lab-1/
+Link: https://jieenyang.github.io/jieenyang-web/rx-fire-ca
 
 ## Reflective Analysis - Purpose 
 
