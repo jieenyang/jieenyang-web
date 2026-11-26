@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+  <meta charset="utf-8">
+  <title>California prescribed fire treatments</title>
+  <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+  <style>
+    body { margin: 0; }
+    #map { position: absolute; inset: 0; }
+    /* creating and styling the child element canvas.p5Canvas under the parent element map */
+    #map canvas.p5Canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
+    /* setting the position and layout of the controls panel, drawing from positioning and flexbox tutorials
+    https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Positioning
+    https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox */
+    #controls {
+      position: absolute; /* placing the controls panel manually */
+      bottom: 20px; /* placing the controls panel 20 pixels above the browser's bottom,
+                    because the browser window is the only explicitly positioned ancestor */
+      left: 10px; /* placing the panel 10 pixels to the right of the left edge */
+      z-index: 2; /* ordering the panel on top of the p5 canvas, which includes the legend */
+      background: rgba(255,255,255,0.9);
+      padding: 10px 16px; /* setting internal distance between text the edge of the box */
+      border-radius: 6px; /* rounding corners */
+      display: flex; /* bringing in Flexible Box Layout for display, applied to each direct children element */
+      flex-direction: column; /* changing layout direction from horizontal to vertical */
+      gap: 5px; /* setting space between each control */
+    }
+    #controls label {
+      font-size: 12px; /* adjusting the font of the <label> elements under controls */
+    }
+    #controls span {
+      font-size: 12px; /* adjusting the font of the year label, which is a <span> element */
+    }
+  </style>
+</head>
+  
+<body>
+  <!-- creating a container with the id "map", which Maplibre will later supply the style json to. -->
+  <div id="map"></div>
+  <!-- creating a container called "controls", which include a reset button and a dropdown menu -->
+  <div id="controls">
+    
+    <!-- creating the text label of the reset button -->
+    <!-- creating the reset button, drawing from the Filtering MapLibre tutorial of Day 14 -->
+    <button id="resetButton">Reset All Records</button>
+
+    <!-- creating geometry selection buttons -->
+    <label>Select by Geometry Exclusively:</label>
+    <button id="showLinearButton">Linear</button>
+    <button id="showNonLinearButton">Non-Linear</button>
+    <button id="showAmbiguousButton">Ambiguous</button>
+    
+    <!-- creating the text label for the dropdown menu and the year slider -->
+    <label>Select by Geometry and Year:</label>
+    
+    <!-- creating the dropdown menu -->
+    <!-- referencing https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option -->
+    <select id="linearityDropdown">
+      <option value="">All</option>
+      <option value="Linear">Linear</option>
+      <option value="Non-Linear">Non-Linear</option>
+      <option value="Ambiguous">Ambiguous</option>
+    </select>
+    
+    <!-- creating the year slider, referencing the slider example from Day 16 slides -->
+    <input type="range" id="yearSlider" min="2010" max="2025" value="2010" step="1">
+    <span id="yearLabel">2010</span>
+
+    <label>To select by year exclusively, <br>  set geometry to "All". </label>
+
+    <!-- creating the checkbox for satellite view: https://www.w3schools.com/tags/att_input_type_checkbox.asp -->
+    <label>
+      Turn on Satellite View:
+      <input type="checkbox" id="satelliteViewCheckbox">
+      <!-- nesting the checkbox inside its label element so they remain the same line using flexbox-->
+    </label>
+    
+  </div>
+  
+  <script>
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://jieenyang.github.io/jieenyang-web/geos472-lab-2/california_fuel_treatments_style.json',
+      center: [-120, 37.5],
+      zoom: 5.2
+    });
+
+    // PART 1: POPUP FUNCTION FOR CLICKED TREATMENT POLYGONS
+
+    // Adapted from the onEachTree function of Day 13 slides, where,
+    // when a treatment polygon is clicked, MapLibre runs onEachTreatment,
+    // which shows the treatment's type, year, and name:
+
+    function onEachTreatment(e) {
+      const treatment = e.features[0].properties;
+      let name; // declaring the treatment name variable without assignment
+      if (treatment.TREAT_NAME) {
+        name = treatment.TREAT_NAME;
+      } else { // If the feature does not have a TREAT_NAME, it is labelled 'unnamed project'.
+        name = 'unnamed project';
+      }
+      const popup = new maplibregl.Popup();
+      popup.setLngLat(e.lngLat);
+      popup.setHTML( // using the setHTML method instead of setText in the class example to enable line switch 
+        'Name: ' + name + '<br>' +
+        'Type: ' + treatment.Treatment_Type + '<br>' +
+        'Year: ' + treatment.YEAR + '<br>' +
+        'Agency: ' + treatment.AGENCY + '<br>' +
+        'Unit: ' + treatment.UNIT_ID + '<br>' +
+        'Shape Index: ' + treatment.SI.toFixed(3) + '<br>' +
+        'Aspect Ratio: ' + treatment.Aspect_Ratio.toFixed(3) + '<br>' +
+        'Fill Ratio: ' + treatment.Fill_Ratio.toFixed(3)
+      );
+      popup.addTo(map);
+    }
+
+    // ca_treatments_fill has been read in as a layer object from the style json
+    // now, everytime a treatment polygon is clicked, it will run onEachTreatment
+    map.on('click', 'ca_treatments_fill', onEachTreatment);
+
+    // PART 2: FILTERING FUNCTION FOR THE DROPDOWN MENU AND YEAR SLIDER
+
+    // Filters the treatment polygons by Linearity_Class when the dropdown changes.
+    // Referencing the highlightTrees() function of Day 14 slides and the slider example from Day 16 slides
+
+    const linearityDropdown = document.getElementById('linearityDropdown');
+    const yearSlider = document.getElementById('yearSlider');
+    const yearLabel = document.getElementById('yearLabel');
+    // bringing in the html elements
+
+    function filteringLinearityAndYear() {
+      const linearitySelection = linearityDropdown.value; // takes the value of the selection
+      const yearSelection = Number(yearSlider.value); // converts the slider values (text) into number, like in the Day 16 slides.
+
+      yearLabel.textContent = yearSelection;
+      // updating the label to show the year selected, like in the Day 16 slides.
+
+      // Filtering for year:
+      const yearFilter = ['==', ['get', 'YEAR'], yearSelection];
+      // The filter searches directly in the GeoJSON linked as source in my style json file.
+      // Unlike the Day 14 example which uses 'in' to checking whether a substring is within the string, 
+      // here I use '==' to check if YEAR matches directly with the numbers from yearSelection
+      // As a result, the syntax is slightly different, changing from ['in', value, property] to ['==', property, value].
+
+      // Filtering for linearity without linearity selection:
+      // When no linearity is selected, i.e. dropdown set to "All", filter for treatments that fall under the slider's year,
+      // without applying any linearity filter at all.
+      if (linearitySelection === '') {
+        map.setFilter('ca_treatments_fill', yearFilter);
+      }
+
+      // Filtering for linearity with linearity selection:
+      // When there is a dropdown selection other than "All", the logic
+      // must now simultaneously consider both linearity and year filters.
+      else {
+        const linearityFilter = ['==', ['get', 'Linearity_Class'], linearitySelection];
+        // Unlike the Day 14 example which uses 'in' to checking whether a substring is within the string, 
+        // here I use '==' to check if Linearity_Class matches directly with categories of ca_treatments_fill
+
+        // Putting together both filters:
+        map.setFilter('ca_treatments_fill', ['all', yearFilter, linearityFilter]);
+        // Next, applying a filter for both using both the yearFilter and the linearityFilter,
+        // so the map only shows what satisfies both the year and the linearity class.
+      }
+    }
+
+    linearityDropdown.addEventListener('change', filteringLinearityAndYear);
+    // Also, unlike in the Day 14 example, which used the 'click' event listener, I am using the 'change' event listener
+    // Because the 'change' event only triggers when I select a different option from the dropdown.
+    // Otherwise, if I were to use 'click', the event actually got triggered when I clicked on the dropdown itself,
+    // not when I change to a new Linearity_Class.
+
+    yearSlider.addEventListener('input', filteringLinearityAndYear);
+    // Similarly, adding an event listener for the year slider, just like in the Day 16 tutorial.
+    // If I drag across multiple years at once, 'change' will only update once; however, 'input'
+    // will update everytime the slider value's step changes.
+
+    // PART 3: FUNCTIONS FOR THE RESET BUTTON
+
+    // Again, referencing the Day 14 slides.
+    
+    function showAllTreatments() {
+      map.setFilter('ca_treatments_fill', null); 
+      // In my case, I don't need something like addTrees() in the Day 14 example,
+      // because I am not readding the layer from the source every time,
+      // but rather directly resetting the filtering setting.
+      linearityDropdown.value = ''; 
+      // Simultaneously setting the dropdown value to '', which is value of the “All” dropdown option.
+
+      yearSlider.value = 2010;
+      yearLabel.textContent = '2010';
+      // Setting the slider back to the earliest year, which is the default value.
+      // Though it is not necessary, I think it is more intuitive to reset the slider as well.
+    }
+    
+    function showLinearGeometryAllYears() {
+      map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Linear']);
+      // Filtering to Linear polygons, irrespective of YEAR
+      linearityDropdown.value = 'Linear';
+      // Simultaneously setting the dropdown's value to linear
+    }
+    
+    function showNonLinearGeometryAllYears() {
+      map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Non-Linear']);
+      // Filtering to Non-Linear polygons, irrespective of YEAR
+      linearityDropdown.value = 'Non-Linear';
+      // Simultaneously setting the dropdown's value to non-linear
+    }
+   
+    function showAmbiguousGeometryAllYears() {
+      map.setFilter('ca_treatments_fill', ['==', ['get', 'Linearity_Class'], 'Ambiguous']);
+      // Filtering to Ambiguous polygons, irrespective of YEAR
+      linearityDropdown.value = 'Ambiguous';
+      // Simultaneously setting the dropdown's value to ambiguous
+    }
+
+    // event listener for the buttons:
+    
+    const resetButton = document.getElementById('resetButton');
+    resetButton.addEventListener('click', showAllTreatments);
+    
+    const showLinearButton = document.getElementById('showLinearButton');
+    showLinearButton.addEventListener('click', showLinearGeometryAllYears);
+
+    const showNonLinearButton = document.getElementById('showNonLinearButton');
+    showNonLinearButton.addEventListener('click', showNonLinearGeometryAllYears);
+
+    const showAmbiguousButton = document.getElementById('showAmbiguousButton');
+    showAmbiguousButton.addEventListener('click', showAmbiguousGeometryAllYears);
+
+    // PART 4: FUNCTION FOR SATELLITE VIEW CHECKBOX
+    
+    function turnSatelliteViewOnOff(e) {
+    // Whenever e, the event object is detected after a change, it is passed through this function
+      let visibilityStatus;
+      if (e.target.checked) { // converts the event object to html object, then determine if the box is checked
+                              //  https://maplibre.org/maplibre-gl-js/docs/examples/filter-symbols-by-toggling-a-list/
+        visibilityStatus = 'visible';
+      }
+      else {
+        visibilityStatus = 'none';
+      }
+      map.setLayoutProperty('satellite_imagery_layer', 'visibility', visibilityStatus);
+      // The .setLayoutProperty() method takes (1) layer name, (2) the layer's property, and (3) what property to set to.
+      // Referencing the setLayoutProperty method from the same toggling example as above:
+      // https://maplibre.org/maplibre-gl-js/docs/examples/filter-symbols-by-toggling-a-list/
+    }
+
+    const satelliteViewCheckbox = document.getElementById('satelliteViewCheckbox');
+    satelliteViewCheckbox.addEventListener('change', turnSatelliteViewOnOff);
+    
+    // PART 5: DRAWING THE LEGEND WITH P5.JS
+    
+    // p5.js is used here to draw a legend on top of the MapLibre map
+    // The specific techniques are drawn from our Meteorite Landings tutorial
+    
+    function setup() {
+      const canvas = createCanvas(windowWidth, windowHeight);
+      canvas.parent('map');
+      noLoop();
+    }
+
+    function drawLegend() {
+
+      // legend panel
+      const x = 10, y = 10;
+      const legendWidth = 230, legendHeight = 150;
+      noStroke();
+      fill(255, 255, 255, 220);
+      rect(x, y, legendWidth, legendHeight, 5);
+
+      // title font
+      fill(20);
+      textSize(13);
+      textStyle(BOLD);
+      text("Prescribed Fire Treatments in California (2010-2025)", x + 10, y + 8, legendWidth - 20, 40);
+      textStyle(NORMAL);
+
+      // text font
+      textSize(12);
+      fill(70);
+      text("Treatment type:", x + 10, y + 55);
+
+      // an array of the four treatment types
+      const treatment_rows = [
+        ["Broadcast Burn", 215, 25, 28],
+        ["Machine Pile Burn", 43, 131, 186],
+        ["Hand Pile Burn", 123, 50, 148],
+        ["Jackpot Burn", 230, 97, 1]
+      ];
+
+      // positioning and labelling the four legend entries
+      let row_y_position = y + 65;
+      for (const [label, r, g, b] of treatment_rows) {
+        noStroke();
+        fill(r, g, b);
+        rect(x + 10, row_y_position, 14, 14, 2);
+        fill(20);
+        textSize(12);
+        text(label, x + 30, row_y_position + 13);
+        row_y_position = row_y_position + 20;
+      }
+
+    }
+
+    function draw() {
+      clear();
+      drawLegend();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      redraw();
+    }
+
+  </script>
+  
+</body>
+  
+</html>
